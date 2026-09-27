@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Handsome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        #display-container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: #ff0055;
+            text-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055, 0 0 40px #ff0055;
+        }
+        .text {
+            font-size: 4rem;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.8s ease-in-out;
+            display: none;
+        }
+        .text.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+        .heart {
+            color: #ff1493;
+            font-size: 8rem;
+            animation: pulse 1.2s infinite ease-in-out;
+            text-shadow: 0 0 15px #ff1493, 0 0 30px #ff1493, 0 0 60px #ff1493;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.25); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix"></canvas>
+
+    <div id="display-container">
+        <div class="text" id="step-3">3</div>
+        <div class="text" id="step-2">2</div>
+        <div class="text" id="step-1">1</div>
+        <div class="text" id="step-happy">Happy</div>
+        <div class="text" id="step-birthday">Birthday</div>
+        <div class="text" id="step-name">Handsome</div>
+        <div class="text heart" id="step-heart">♥</div>
+    </div>
+
+    <script>
+        // Matrix Rain Background Effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const alphabet = katakana + latin;
+
+        const fontSize = 16;
+        const columns = Math.floor(canvas.width / fontSize);
+        const rainDrops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#ff0055';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 30);
+
+        // Sequence Controller
+        const sequence = ['step-3', 'step-2', 'step-1', 'step-happy', 'step-birthday', 'step-name', 'step-heart'];
+        let currentIndex = 0;
+
+        function showNextStep() {
+            if (currentIndex > 0) {
+                const prevElem = document.getElementById(sequence[currentIndex - 1]);
+                if (prevElem) prevElem.classList.remove('active');
+            }
+
+            if (currentIndex < sequence.length) {
+                const currElem = document.getElementById(sequence[currentIndex]);
+                if (currElem) currElem.classList.add('active');
+                currentIndex++;
+                setTimeout(showNextStep, 1200);
+            }
+        }
+
+        // Start sequence after short delay
+        setTimeout(showNextStep, 500);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
